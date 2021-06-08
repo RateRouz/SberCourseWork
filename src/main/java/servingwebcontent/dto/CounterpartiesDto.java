@@ -1,17 +1,22 @@
 package servingwebcontent.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import servingwebcontent.annotation.CounterpartyValidation;
 
-@Getter
-@Setter
-@NoArgsConstructor
+import javax.validation.constraints.NotBlank;
+
+@Data
+@CounterpartyValidation
 public class CounterpartiesDto {
+    @NotBlank
     private String name;
-    private Integer inn;
-    private Integer kpp;
-    private String account_number;
-    private Integer bank_bik;
 
+    private Long inn;
+
+    private Integer kpp;
+
+    @NotBlank
+    private String accountNumber;
+
+    private Integer bankBik;
 }

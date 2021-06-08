@@ -4,9 +4,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CounterpartiesService {
-    public boolean tryParseInt(String value) {
+    public boolean tryParseLong(String value) {
         try {
-            int result = Integer.parseInt(value);
+            long result = Long.parseLong(value);
             return true;
         } catch (NumberFormatException e) {
             return false;
