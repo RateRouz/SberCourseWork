@@ -1,5 +1,6 @@
 package servingwebcontent.validation;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanWrapperImpl;
 import servingwebcontent.annotation.CounterpartyValidation;
 
@@ -8,24 +9,42 @@ import javax.validation.ConstraintValidatorContext;
 import java.util.Objects;
 
 public class CounterpartyValidator implements ConstraintValidator<CounterpartyValidation, Object> {
+    private CounterpartyValidation innValidator;
     @Override
     public void initialize(CounterpartyValidation innValidator) {
+        this.innValidator=innValidator;
     }
 
     @Override
     public boolean isValid(Object model, ConstraintValidatorContext constraintValidatorContext) {
+        boolean isValid = true;
+        String errorsMessage = "";
+
         String innString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("inn")).toString();
         if (!isInnValid(innString)) {
-            return false;
+            errorsMessage += "Некорректный ИНН\r\n";
+            isValid = false;
         }
 
         String bankBikString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("bankBik")).toString();
         if (!isBankBikValid(bankBikString)) {
-            return false;
+            errorsMessage += "Некорректный БИК\r\n";
+            isValid = false;
+        }
+        else{
+            String accountNumberString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("accountNumber")).toString();
+            if (!isAccountNumberValid(bankBikString, accountNumberString)){
+                errorsMessage += "Некорректный номер счёта\r\n";
+                isValid = false;
+            }
         }
 
-        String accountNumberString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("accountNumber")).toString();
-        return isAccountNumberValid(bankBikString, accountNumberString);
+        if (!isValid){
+            constraintValidatorContext.disableDefaultConstraintViolation();
+            constraintValidatorContext.buildConstraintViolationWithTemplate( errorsMessage  ).addConstraintViolation();
+        }
+
+        return isValid;
     }
 
     private boolean isAccountNumberValid(String bankBikString, String accountNumberString) {
@@ -38,8 +57,8 @@ public class CounterpartyValidator implements ConstraintValidator<CounterpartyVa
         int[] accountNumberToCalculate;
 
         boolean isRKC = bankBikString.startsWith("00", 6);
-        String stringAccountNumberToCalculate = isRKC ? "0" + bankBikString.substring(4, 6) + accountNumberString :
-                bankBikString.substring(6, 9) + accountNumberString;
+        String stringAccountNumberToCalculate = isRKC ? "0" + bankBikString.substring(4, 6) : bankBikString.substring(6, 9);
+        stringAccountNumberToCalculate += accountNumberString;
 
         accountNumberToCalculate = convertStringToIntArray(stringAccountNumberToCalculate);
 
