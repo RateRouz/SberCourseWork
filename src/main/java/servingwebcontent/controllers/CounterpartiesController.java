@@ -28,8 +28,8 @@ public class CounterpartiesController {
         return "/main";
     }
 
-    @PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity add(@RequestBody @Valid CounterpartiesDto counterparties) {
+    @PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity save(@RequestBody @Valid CounterpartiesDto counterparties) {
         try {
             DictionaryCounterparty counterpartiesDto = modelMapper.map(counterparties, DictionaryCounterparty.class);
             dictionaryCounterpartyRepo.save(counterpartiesDto);
