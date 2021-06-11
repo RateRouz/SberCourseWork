@@ -16,32 +16,40 @@ public class CounterpartyValidator implements ConstraintValidator<CounterpartyVa
     }
 
     @Override
-    public boolean isValid(Object model, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(Object model, ConstraintValidatorContext constraintValidatorContext) throws NullPointerException {
         boolean isValid = true;
-        String errorsMessage = "";
 
-        String innString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("inn")).toString();
-        if (!isInnValid(innString)) {
-            errorsMessage += "Некорректный ИНН\r\n";
-            isValid = false;
-        }
+        try {
+            String errorsMessage = "";
 
-        String bankBikString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("bankBik")).toString();
-        if (!isBankBikValid(bankBikString)) {
-            errorsMessage += "Некорректный БИК\r\n";
-            isValid = false;
-        }
-        else{
-            String accountNumberString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("accountNumber")).toString();
-            if (!isAccountNumberValid(bankBikString, accountNumberString)){
-                errorsMessage += "Некорректный номер счёта\r\n";
+            String innString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("inn")).toString();
+            if (!isInnValid(innString)) {
+                errorsMessage += "Некорректный ИНН\r\n";
                 isValid = false;
             }
-        }
 
-        if (!isValid){
+            String bankBikString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("bankBik")).toString();
+            if (!isBankBikValid(bankBikString)) {
+                errorsMessage += "Некорректный БИК\r\n";
+                isValid = false;
+            } else {
+                String accountNumberString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("accountNumber")).toString();
+                if (!isAccountNumberValid(bankBikString, accountNumberString)) {
+                    errorsMessage += "Некорректный номер счёта\r\n";
+                    isValid = false;
+                }
+            }
+
+            if (!isValid) {
+                constraintValidatorContext.disableDefaultConstraintViolation();
+                constraintValidatorContext.buildConstraintViolationWithTemplate(errorsMessage).addConstraintViolation();
+            }
+        }
+        catch (NullPointerException ex){
+            isValid = false;
+
             constraintValidatorContext.disableDefaultConstraintViolation();
-            constraintValidatorContext.buildConstraintViolationWithTemplate( errorsMessage  ).addConstraintViolation();
+            constraintValidatorContext.buildConstraintViolationWithTemplate("Произошла ошибка во время валидации полей").addConstraintViolation();
         }
 
         return isValid;

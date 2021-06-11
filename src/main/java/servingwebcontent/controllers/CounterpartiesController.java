@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import servingwebcontent.dto.CounterpartiesDto;
 import servingwebcontent.entity.DictionaryCounterparty;
@@ -22,12 +23,9 @@ public class CounterpartiesController {
     private ModelMapper modelMapper = new ModelMapper();
 
     @GetMapping
-    public ResponseEntity getAll() {
-        try {
-            return ResponseEntity.ok(dictionaryCounterpartyRepo.findAll());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Ошибка " + e);
-        }
+    public String getAll(Model model) {
+        model.addAttribute("entities", dictionaryCounterpartyRepo.findAll());
+        return "/main";
     }
 
     @PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -37,7 +35,7 @@ public class CounterpartiesController {
             dictionaryCounterpartyRepo.save(counterpartiesDto);
             return ResponseEntity.ok("Пользователь успешно сохранен");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Произошла ошибка " + e);
+            return ResponseEntity.badRequest().body("Произошла ошибка " + e.getMessage());
         }
     }
 
@@ -60,9 +58,9 @@ public class CounterpartiesController {
     public ResponseEntity delete(@PathVariable Long id) {
         try {
             dictionaryCounterpartyRepo.deleteById(id);
-            return ResponseEntity.ok("Удалился");
+            return ResponseEntity.ok("Запись с id = " + id + " удалена");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Нет такого");
+            return ResponseEntity.badRequest().body("Запись с id = " + id + " не найдена");
         }
     }
 }

@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Главная</title>
+</head>
+<body>
+<script type="application/javascript">
+    $('body').on('input', 'input[type="number"][minlength][maxlength]', function(){
+        if (this.value.length > this.maxLength){
+            this.value = this.value.slice(0, this.maxLength);
+        }
+    });
+
+    async function deleteEntity(id) {
+        let url = '/delete/' + id;
+
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json'
+            }
+        });
+        alert(await response.json());
+        location.reload();
+    }
+
+    async function addEntity() {
+        const rawResponse = await fetch('/add', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(
+                {
+                    id: document.getElementById('id').value,
+                    name: document.getElementById('name').value,
+                    inn: document.getElementById('inn').value,
+                    kpp: document.getElementById('kpp').value,
+                    accountNumber: document.getElementById('accountNumber').value,
+                    bankBik: document.getElementById('bankBik').value,
+                })
+        });
+        const content = await rawResponse.text();
+
+        alert(content);
+
+        location.reload();
+    }
+</script>
+    <div>
+        <input type="hidden" id="id" value="0"/>
+        <input type="text" id="name" placeholder="Введите контрагента"/>
+        <input type="number" id="inn" minlength="10" maxlength="12" placeholder="Введите ИНН" width="500"/>
+        <input type="number" id="kpp" minlength="9" maxlength="9"  placeholder="Введите КПП"  width="500"/>
+        <input type="number" id="accountNumber" minlength="20" maxlength="20" placeholder="Введите номер счета" width="500"/>
+        <input type="number" id="bankBik" minlength="9" maxlength="9" placeholder="Введите БИК" width="500"/>
+        <br/>
+        <button onclick="addEntity()">Сохранить</button>
+    </div>
+<br/>
+<div>Список контрагентов</div>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>name</th>
+            <th>inn</th>
+            <th>kpp</th>
+            <th>accountNumber</th>
+            <th>bankBik</th>
+        </tr>
+    </thead>
+
+    <tr th:each="entity : ${entities}">
+        <td th:text="${entity.name}"/>
+        <td th:text="${entity.inn}"/>
+        <td th:text="${entity.kpp}"/>
+        <td th:text="${entity.accountNumber}"/>
+        <td th:text="${entity.bankBik}"/>
+
+        <td>
+            <input type="button" value="Delete" th:onclick="'javascript:deleteEntity(\'' + ${entity.getId()} + '\');'" style="padding: 3px">
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
