@@ -28,13 +28,12 @@
     }
 
     function editEntity(id, name, inn, kpp, accountNumber, bankBik){
+        document.getElementById('id').value = id;
         document.getElementById('name').value = name;
         document.getElementById('inn').value = inn;
         document.getElementById('kpp').value = kpp;
         document.getElementById('accountNumber').value = accountNumber;
         document.getElementById('bankBik').value = bankBik;
-
-        saveEntity(id);
     }
 
     async function saveEntity(id) {
@@ -46,7 +45,7 @@
             },
             body: JSON.stringify(
                 {
-                    id: id,
+                    id: document.getElementById('id').value,
                     name: document.getElementById('name').value,
                     inn: document.getElementById('inn').value,
                     kpp: document.getElementById('kpp').value,
@@ -60,8 +59,18 @@
 
         location.reload();
     }
+
+    async function cancel(){
+        document.getElementById("id").value = "";
+        document.getElementById("name").value = "";
+        document.getElementById("inn").value = "";
+        document.getElementById("kpp").value = "";
+        document.getElementById("accountNumber").value = "";
+        document.getElementById("bankBik").value = "";
+    }
 </script>
     <div>
+        <input hidden="hidden" id="id" value="0">
         <input type="text" id="name" placeholder="Введите контрагента"/>
         <input type="number" id="inn" minlength="10" maxlength="12" placeholder="Введите ИНН" width="500"/>
         <input type="number" id="kpp" minlength="9" maxlength="9"  placeholder="Введите КПП"  width="500"/>
@@ -69,6 +78,7 @@
         <input type="number" id="bankBik" minlength="9" maxlength="9" placeholder="Введите БИК" width="500"/>
         <br/>
         <button onclick="saveEntity(0)">Сохранить</button>
+        <button onclick="cancel()">Отмена</button>
     </div>
 <br/>
 <div>Список контрагентов</div>
@@ -92,11 +102,18 @@
         <td th:text="${entity.bankBik}"/>
 
         <td>
-            <input type="button" value="Delete" th:onclick="'javascript:deleteEntity(\'' + ${entity.getId()} + '\');'" style="padding: 3px">
+            <input type="button" value="Delete" th:onclick="'javascript:deleteEntity(' + ${entity.getId()} + ');'" style="padding: 3px">
         </td>
 
         <td>
-            <input type="button" value="Edit" th:onclick="'javascript:editEntity(\'' + ${entity.getId()} + '\');'" style="padding: 3px">
+            <input type="button" value="Edit" style="padding: 3px"
+                   th:id="${entity.getId()}"
+                   th:name="${entity.getName()}"
+                   th:inn="${entity.getInn()}"
+                   th:kpp="${entity.getKpp()}"
+                   th:accountNumber="${entity.getAccountNumber()}"
+                   th:bankBik="${entity.getBankBik()}"
+                   th:onclick="javascript:editEntity(this.getAttribute('id'), this.getAttribute('name'), this.getAttribute('inn'), this.getAttribute('kpp'), this.getAttribute('accountNumber'), this.getAttribute('bankBik'));"/>
         </td>
     </tr>
 </table>
