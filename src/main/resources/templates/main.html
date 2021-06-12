@@ -53,11 +53,19 @@
                     bankBik: document.getElementById('bankBik').value,
                 })
         });
-        const content = await rawResponse.text();
+        const content = await rawResponse.json();
+        if (content["status"] == 200){
+            alert(content);
+            location.reload();
+        }
+        else {
+            let errorMessages = [];
+            for (let e in content["errors"]){
+                errorMessages.push(content["errors"][e]["defaultMessage"]);
+            }
 
-        alert(content);
-
-        location.reload();
+            document.getElementById("savingErrorMessage").innerHTML = errorMessages.join(", ");
+        }
     }
 
     async function cancel(){
@@ -79,8 +87,24 @@
         <br/>
         <button onclick="saveEntity(0)">Сохранить</button>
         <button onclick="cancel()">Отмена</button>
+        <label id="savingErrorMessage"/>
     </div>
 <br/>
+
+<div>
+    Фильтрация
+</div>
+
+<div>
+    <form method="get" action="/">
+        <input type="text" name="name_filter" th:value="${name_filter}" placeholder="Введите наименование"/>
+        <input type="text" name="bankBik_filter" th:value="${bankBik_filter}" placeholder="Введите БИК"/>
+        <input type="text" name="accountNumber_filter" th:value="${accountNumber_filter}" placeholder="Введите номер счета"/>
+
+        <button type="submit">Отфильтровать</button>
+        <div th:text="${errorMessage}"/>
+    </form>
+</div>
 <div>Список контрагентов</div>
 
 <table border="1">
@@ -113,7 +137,7 @@
                    th:kpp="${entity.getKpp()}"
                    th:accountNumber="${entity.getAccountNumber()}"
                    th:bankBik="${entity.getBankBik()}"
-                   th:onclick="javascript:editEntity(this.getAttribute('id'), this.getAttribute('name'), this.getAttribute('inn'), this.getAttribute('kpp'), this.getAttribute('accountNumber'), this.getAttribute('bankBik'));"/>
+                   th:onclick="editEntity(this.getAttribute('id'), this.getAttribute('name'), this.getAttribute('inn'), this.getAttribute('kpp'), this.getAttribute('accountNumber'), this.getAttribute('bankBik'));"/>
         </td>
     </tr>
 </table>
