@@ -29,8 +29,15 @@
                 'Content-type': 'application/json'
             }
         });
-        alert(await response.text());
-        location.reload();
+
+        let responseText = await response.text();
+        alert(responseText);
+
+        if (response["status"] === 200) {
+            location.reload();
+        } else {
+            document.getElementById("savingErrorMessage").innerHTML = responseText;
+        }
     }
 
     function editEntity(id, name, inn, kpp, accountNumber, bankBik) {
@@ -59,12 +66,13 @@
                     bankBik: document.getElementById('bankBik').value,
                 })
         });
-        const content = await rawResponse.json();
-        if (content["status"] === 200) {
-            alert(content);
+
+        if (rawResponse["status"] === 200) {
+            // alert(content);
             location.reload();
         } else {
             let errorMessages = [];
+            const content = await rawResponse.json();
             for (let e in content["errors"]) {
                 errorMessages.push(content["errors"][e]["defaultMessage"]);
             }
@@ -83,18 +91,22 @@
     }
 </script>
 <div class="container">
-    <div class="input-group mb-3">
-        <input hidden="hidden" id="id" value="0">
-        <input class="form-control m-2" id="name" placeholder="Введите контрагента"/>
-        <input class="form-control" type="number" id="inn" minlength="10" maxlength="12" placeholder="Введите ИНН" style="width: 50px; height: 50px" />
-        <input class="form-control m-2" type="number" id="kpp" minlength="9" maxlength="9" placeholder="Введите КПП" width="500" height="100"/>
-        <input class="form-control" type="number" id="accountNumber" minlength="20" maxlength="20" placeholder="Введите номер счета"
-               width="500" height="100"/>
-        <input class="form-control m-2" type="number" id="bankBik" minlength="9" maxlength="9" placeholder="Введите БИК" width="500" height="100"/>
-    </div>
-    <button type="button" class="btn btn-primary ml-3" onclick="saveEntity(0)">Сохранить</button>
-    <button type="button" class="btn btn-danger" onclick="cancel()">Отмена</button>
-    <label id="savingErrorMessage"/>
+        <div class="input-group mb-3">
+            <input hidden="hidden" id="id" value="">
+            <input class="form-control m-3" id="name" placeholder="Введите контрагента"/>
+            <input class="form-control m-3" type="number" id="inn" min="0" minlength="10" maxlength="12" placeholder="Введите ИНН"
+                   style="width: 50px; height: 50px"/>
+            <input class="form-control m-3" type="number" id="kpp" min="0" minlength="9" maxlength="9" placeholder="Введите КПП"
+                   width="500" height="100"/>
+            <input class="form-control m-3" type="number" id="accountNumber" minlength="20" maxlength="20"
+                   placeholder="Введите номер счета"
+                   width="500" height="100"/>
+            <input class="form-control m-3" type="number" id="bankBik" minlength="9" maxlength="9"
+                   placeholder="Введите БИК" width="500" height="100"/>
+        </div>
+        <button type="submit" class="btn btn-primary ml-3" onclick="saveEntity(0)">Сохранить</button>
+        <button type="reset" class="btn btn-danger" onclick="cancel()">Отмена</button>
+        <label id="savingErrorMessage"/>
 </div>
 <br/>
 
@@ -146,7 +158,7 @@
                    th:kpp="${entity.getKpp()}"
                    th:accountNumber="${entity.getAccountNumber()}"
                    th:bankBik="${entity.getBankBik()}"
-                   th:onclick="editEntity(this.getAttribute('id'), this.getAttribute('name'), this.getAttribute('inn'), this.getAttribute('kpp'), this.getAttribute('accountNumber'), this.getAttribute('bankBik')"/>
+                   th:onclick="editEntity(this.getAttribute('id'), this.getAttribute('name'), this.getAttribute('inn'), this.getAttribute('kpp'), this.getAttribute('accountNumber'), this.getAttribute('bankBik'))"/>
         </td>
     </tr>
 </table>

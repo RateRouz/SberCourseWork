@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
@@ -27,12 +28,17 @@ public class DictionaryCounterparty {
     private Long inn;
 
     @Min(100000000)
+    @Max(999999999)
     @Column(name = "kpp")
     private Integer kpp;
 
+    @Size(min = 20)
+    @Size(max = 20)
     @Column(name = "account_number")
     private String accountNumber;
 
+    @Min(100000000)
+    @Max(999999999)
     @Column(name = "bank_bik")
     private Integer bankBik;
 }
