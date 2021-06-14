@@ -23,7 +23,7 @@ public class CounterpartiesController {
     private ModelMapper modelMapper = new ModelMapper();
 
     @GetMapping
-    public String getAll(@RequestParam(required = false) String name_filter, @RequestParam(required = false) Integer bankBik_filter, @RequestParam(required = false) String accountNumber_filter, Model model) {
+    public String getAll(@RequestParam(required = false) String name_filter, @RequestParam(required = false) String bankBik_filter, @RequestParam(required = false) String accountNumber_filter, Model model) {
         try {
             model.addAttribute("name_filter", name_filter);
             model.addAttribute("bankBik_filter", bankBik_filter);

@@ -8,9 +8,9 @@ import servingwebcontent.entity.DictionaryCounterparty;
 import java.util.List;
 
 public interface DictionaryCounterpartyRepository extends JpaRepository<DictionaryCounterparty, Long> {
-    List<DictionaryCounterparty> findByNameOrAccountNumberAndBankBik(@Param("name") String name,@Param("accountNumber") String accountNumber,@Param("bankBik") Integer bankBik);
+    List<DictionaryCounterparty> findByNameOrAccountNumberAndBankBik(@Param("name") String name,@Param("accountNumber") String accountNumber,@Param("bankBik") String String);
 
     List<DictionaryCounterparty> findByNameLike(@Param("name") String name);
 
-    List<DictionaryCounterparty> findByAccountNumberAndBankBik(@Param("accountNumber") String accountNumber,@Param("bankBik") Integer bankBik);
+    List<DictionaryCounterparty> findByAccountNumberAndBankBik(@Param("accountNumber") String accountNumber,@Param("bankBik") String String);
 }
