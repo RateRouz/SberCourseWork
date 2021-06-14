@@ -20,6 +20,13 @@
         }
     });
 
+    function isNumberKey(evt){
+        let charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+        return true;
+    }
+
     async function deleteEntity(id) {
         let url = '/delete/' + id;
 
@@ -71,14 +78,30 @@
             // alert(content);
             location.reload();
         } else {
-            let errorMessages = [];
-            const content = await rawResponse.json();
-            for (let e in content["errors"]) {
-                errorMessages.push(content["errors"][e]["defaultMessage"]);
-            }
+            let responseText = await rawResponse.text();
 
-            document.getElementById("savingErrorMessage").innerHTML = errorMessages.join(", ");
+            if (!IsJsonString(responseText)) {
+                document.getElementById("savingErrorMessage").innerHTML = responseText;
+            }
+            else {
+                let errorMessages = [];
+                const content = JSON.parse(responseText);
+                for (let e in content["errors"]) {
+                    errorMessages.push(content["errors"][e]["defaultMessage"]);
+                }
+
+                document.getElementById("savingErrorMessage").innerHTML = errorMessages.join(", ");
+            }
         }
+    }
+
+    function IsJsonString(str) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
     }
 
     async function cancel() {
@@ -94,15 +117,14 @@
         <div class="input-group mb-3">
             <input hidden="hidden" id="id" value="">
             <input class="form-control m-3" id="name" placeholder="Введите контрагента"/>
-            <input class="form-control m-3" type="number" id="inn" min="0" minlength="10" maxlength="12" placeholder="Введите ИНН"
-                   style="width: 50px; height: 50px"/>
-            <input class="form-control m-3" type="number" id="kpp" min="0" minlength="9" maxlength="9" placeholder="Введите КПП"
-                   width="500" height="100"/>
+            <input class="form-control m-3" id="inn" min="0" minlength="10" maxlength="12" placeholder="Введите ИНН"
+                   onkeypress="return isNumberKey(event)" style="width: 50px; height: 50px"/>
+            <input class="form-control m-3" type="text" id="kpp" min="0" minlength="9" maxlength="9" placeholder="Введите КПП"
+                   onkeypress="return isNumberKey(event)" width="500" height="100"/>
             <input class="form-control m-3" type="number" id="accountNumber" minlength="20" maxlength="20"
-                   placeholder="Введите номер счета"
-                   width="500" height="100"/>
-            <input class="form-control m-3" type="number" id="bankBik" minlength="9" maxlength="9"
-                   placeholder="Введите БИК" width="500" height="100"/>
+                   placeholder="Введите номер счета" width="500" height="100"/>
+            <input class="form-control m-3" type="text" id="bankBik" minlength="9" maxlength="9"
+                   onkeypress="return isNumberKey(event)" placeholder="Введите БИК" width="500" height="100"/>
         </div>
         <button type="submit" class="btn btn-primary ml-3" onclick="saveEntity(0)">Сохранить</button>
         <button type="reset" class="btn btn-danger" onclick="cancel()">Отмена</button>
@@ -125,6 +147,7 @@
         <div th:text="${errorMessage}"></div>
     </form>
 </div>
+</br>
 <div>Список контрагентов</div>
 
 <table class="table table-striped">

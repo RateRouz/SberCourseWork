@@ -1,5 +1,6 @@
 package servingwebcontent.controllers;
 
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -33,7 +34,7 @@ public class CounterpartiesController {
             } else {
                 List<DictionaryCounterparty> filteringList = null;
                 boolean hasNameParam = name_filter != null && !name_filter.isEmpty();
-                if (hasNameParam){
+                if (hasNameParam) {
                     name_filter = "%" + name_filter + "%";
                 }
 
@@ -45,8 +46,7 @@ public class CounterpartiesController {
                     filteringList = dictionaryCounterpartyRepo.findByNameLike(name_filter);
                 } else if (hasBankBik) {
                     filteringList = dictionaryCounterpartyRepo.findByAccountNumberAndBankBik(accountNumber_filter, bankBik_filter);
-                }
-                else{
+                } else {
                     filteringList = dictionaryCounterpartyRepo.findAll();
                 }
 
@@ -66,7 +66,18 @@ public class CounterpartiesController {
             dictionaryCounterpartyRepo.save(counterpartiesDto);
             return ResponseEntity.ok("Пользователь успешно сохранен");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Произошла ошибка " + e.getMessage());
+            String expMessage = e.getMessage();
+            Throwable cause1 = e.getCause();
+            if (cause1 != null) {
+                expMessage += cause1.getMessage();
+
+                Throwable cause2 = cause1.getCause();
+                if (cause2 != null) {
+                    expMessage += cause2.getMessage();
+                }
+            }
+
+            return ResponseEntity.badRequest().body("Произошла ошибка " + expMessage);
         }
     }
 

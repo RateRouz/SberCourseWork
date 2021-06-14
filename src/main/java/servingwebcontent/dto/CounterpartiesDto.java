@@ -1,7 +1,6 @@
 package servingwebcontent.dto;
 
-import lombok.*;
-import org.hibernate.validator.constraints.UniqueElements;
+import lombok.Data;
 import servingwebcontent.annotation.CounterpartyValidation;
 
 import javax.persistence.Id;
@@ -13,16 +12,17 @@ public class CounterpartiesDto {
     @Id
     private Long id;
 
-    //@UniqueElements
     @NotBlank(message = "Имя не задано")
     private String name;
 
-    private Long inn;
+    @NotBlank(message = "Не введен ИНН")
+    private String inn;
 
-    private Integer kpp;
+    private String kpp;
 
     @NotBlank(message = "Номер счёта не задан")
     private String accountNumber;
 
-    private Integer bankBik;
+    @NotBlank(message = "Не введн БИК")
+    private String bankBik;
 }

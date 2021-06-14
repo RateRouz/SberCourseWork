@@ -28,6 +28,12 @@ public class CounterpartyValidator implements ConstraintValidator<CounterpartyVa
                 isValid = false;
             }
 
+            String kppString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("kpp")).toString();
+            if (!(kppString.isEmpty() || kppString.length() == 9)) {
+                errorsMessage += "Не корректный КПП\r\n";
+                isValid = false;
+            }
+
             String bankBikString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("bankBik")).toString();
             if (!isBankBikValid(bankBikString)) {
                 errorsMessage += "Некорректный БИК\r\n";

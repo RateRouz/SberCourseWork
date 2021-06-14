@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -24,21 +25,18 @@ public class DictionaryCounterparty {
     @Column(name = "name", unique = true)
     private String name;
 
+    @Size(min = 10, max = 12)
     @Column(name = "inn")
-    private Long inn;
+    private String inn;
 
-    @Min(100000000)
-    @Max(999999999)
     @Column(name = "kpp")
-    private Integer kpp;
+    private String kpp;
 
-    @Size(min = 20)
-    @Size(max = 20)
+    @Size(min = 20, max = 20)
     @Column(name = "account_number")
     private String accountNumber;
 
-    @Min(100000000)
-    @Max(999999999)
+    @Size(min = 9, max = 9)
     @Column(name = "bank_bik")
-    private Integer bankBik;
+    private String bankBik;
 }
