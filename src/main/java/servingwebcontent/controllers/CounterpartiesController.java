@@ -1,6 +1,5 @@
 package servingwebcontent.controllers;
 
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,29 +22,29 @@ public class CounterpartiesController {
     private ModelMapper modelMapper = new ModelMapper();
 
     @GetMapping
-    public String getAll(@RequestParam(required = false) String name_filter, @RequestParam(required = false) String bankBik_filter, @RequestParam(required = false) String accountNumber_filter, Model model) {
+    public String getAll(@RequestParam(required = false) String nameFilter, @RequestParam(required = false) String bankBikFilter, @RequestParam(required = false) String accountNumberFilter, Model model) {
         try {
-            model.addAttribute("name_filter", name_filter);
-            model.addAttribute("bankBik_filter", bankBik_filter);
-            model.addAttribute("accountNumber_filter", accountNumber_filter);
+            model.addAttribute("nameFilter", nameFilter);
+            model.addAttribute("bankBikFilter", bankBikFilter);
+            model.addAttribute("accountNumberFilter", accountNumberFilter);
+            boolean isBankBikFilter = bankBikFilter != null && !bankBikFilter.isEmpty();
+            boolean isAccountNumberFilter = accountNumberFilter != null && !accountNumberFilter.isEmpty();
 
-            if (!((bankBik_filter == null && (accountNumber_filter == null || accountNumber_filter.isEmpty())) || (bankBik_filter != null && !accountNumber_filter.isEmpty()))) {
+            if (!((isBankBikFilter && isAccountNumberFilter) || (!isBankBikFilter && !isAccountNumberFilter))) {
                 model.addAttribute("errorMessage", "БИК и номер счета парные");
             } else {
-                List<DictionaryCounterparty> filteringList = null;
-                boolean hasNameParam = name_filter != null && !name_filter.isEmpty();
+                List<DictionaryCounterparty> filteringList;
+                boolean hasNameParam = nameFilter != null && !nameFilter.isEmpty();
                 if (hasNameParam) {
-                    name_filter = "%" + name_filter + "%";
+                    nameFilter = "%" + nameFilter + "%";
                 }
 
-                boolean hasBankBik = bankBik_filter != null;
-
-                if (hasNameParam && hasBankBik) {
-                    filteringList = dictionaryCounterpartyRepo.findByNameOrAccountNumberAndBankBik(name_filter, accountNumber_filter, bankBik_filter);
+                if (hasNameParam && isBankBikFilter) {
+                    filteringList = dictionaryCounterpartyRepo.findByNameOrAccountNumberAndBankBik(nameFilter, accountNumberFilter, bankBikFilter);
                 } else if (hasNameParam) {
-                    filteringList = dictionaryCounterpartyRepo.findByNameLike(name_filter);
-                } else if (hasBankBik) {
-                    filteringList = dictionaryCounterpartyRepo.findByAccountNumberAndBankBik(accountNumber_filter, bankBik_filter);
+                    filteringList = dictionaryCounterpartyRepo.findByNameLike(nameFilter);
+                } else if (isBankBikFilter) {
+                    filteringList = dictionaryCounterpartyRepo.findByAccountNumberAndBankBik(accountNumberFilter, bankBikFilter);
                 } else {
                     filteringList = dictionaryCounterpartyRepo.findAll();
                 }

@@ -22,9 +22,8 @@
 
     function isNumberKey(evt){
         let charCode = (evt.which) ? evt.which : evt.keyCode;
-        if (charCode > 31 && (charCode < 48 || charCode > 57))
-            return false;
-        return true;
+        return !(charCode > 31 && (charCode < 48 || charCode > 57));
+
     }
 
     async function deleteEntity(id) {
@@ -138,9 +137,9 @@
 
 <div>
     <form method="get" action="/">
-        <input type="text" name="name_filter" th:value="${name_filter}" placeholder="Введите наименование"/>
-        <input type="text" name="bankBik_filter" th:value="${bankBik_filter}" placeholder="Введите БИК"/>
-        <input type="text" name="accountNumber_filter" th:value="${accountNumber_filter}"
+        <input type="text" name="nameFilter" th:value="${nameFilter}" placeholder="Введите наименование"/>
+        <input type="text" name="bankBikFilter" th:value="${bankBikFilter}" placeholder="Введите БИК"/>
+        <input type="text" name="accountNumberFilter" th:value="${accountNumberFilter}"
                placeholder="Введите номер счета"/>
 
         <button type="submit">Отфильтровать</button>

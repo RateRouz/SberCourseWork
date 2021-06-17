@@ -1,11 +1,12 @@
 package servingwebcontent.validation;
 
-import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanWrapperImpl;
 import servingwebcontent.annotation.CounterpartyValidation;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class CounterpartyValidator implements ConstraintValidator<CounterpartyValidation, Object> {
@@ -20,35 +21,35 @@ public class CounterpartyValidator implements ConstraintValidator<CounterpartyVa
         boolean isValid = true;
 
         try {
-            String errorsMessage = "";
+            List<String> errorsMessages = new ArrayList<>();
 
             String innString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("inn")).toString();
             if (!isInnValid(innString)) {
-                errorsMessage += "Некорректный ИНН\r\n";
+                errorsMessages.add("Некорректный ИНН");
                 isValid = false;
             }
 
             String kppString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("kpp")).toString();
             if (!(kppString.isEmpty() || kppString.length() == 9)) {
-                errorsMessage += "Не корректный КПП\r\n";
+                errorsMessages.add("Не корректный КПП");
                 isValid = false;
             }
 
             String bankBikString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("bankBik")).toString();
             if (!isBankBikValid(bankBikString)) {
-                errorsMessage += "Некорректный БИК\r\n";
+                errorsMessages.add("Некорректный БИК");
                 isValid = false;
             } else {
                 String accountNumberString = Objects.requireNonNull(new BeanWrapperImpl(model).getPropertyValue("accountNumber")).toString();
                 if (!isAccountNumberValid(bankBikString, accountNumberString)) {
-                    errorsMessage += "Некорректный номер счёта\r\n";
+                    errorsMessages.add("Некорректный номер счёта");
                     isValid = false;
                 }
             }
 
             if (!isValid) {
                 constraintValidatorContext.disableDefaultConstraintViolation();
-                constraintValidatorContext.buildConstraintViolationWithTemplate(errorsMessage).addConstraintViolation();
+                constraintValidatorContext.buildConstraintViolationWithTemplate(String.join("</br>", errorsMessages)).addConstraintViolation();
             }
         }
         catch (NullPointerException ex){
@@ -61,6 +62,12 @@ public class CounterpartyValidator implements ConstraintValidator<CounterpartyVa
         return isValid;
     }
 
+    /**
+     * Проверка валидности номера счета
+     * @param bankBikString
+     * @param accountNumberString
+     * @return true, если валидный, иначе false
+     */
     private boolean isAccountNumberValid(String bankBikString, String accountNumberString) {
         if (accountNumberString.length() != 20) {
             return false;
@@ -83,6 +90,7 @@ public class CounterpartyValidator implements ConstraintValidator<CounterpartyVa
         return controlNumber == 0;
     }
 
+
     private int[] convertStringToIntArray(String stringArray) {
         int[] array = new int[stringArray.length()];
 
@@ -102,6 +110,11 @@ public class CounterpartyValidator implements ConstraintValidator<CounterpartyVa
         return credOrgNumber >= 50;
     }
 
+    /**
+     * Проверка валидности ИНН
+     * @param innString
+     * @return true, если валидный, иначе false
+     */
     private boolean isInnValid(String innString) {
         if (innString.length() != 10 && innString.length() != 12) {
             return false;
